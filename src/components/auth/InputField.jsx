@@ -3,48 +3,62 @@ import { Eye, EyeOff } from 'lucide-react'
 
 export default function InputField({
   id,
+  name,
   label,
   type = 'text',
+  placeholder,
   icon: Icon,
+  value,
+  onChange,
   error,
-  ...props
+  required = true,
+  autoComplete,
 }) {
-  const [show, setShow] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
   const isPassword = type === 'password'
+  const inputType = isPassword && showPassword ? 'text' : type
 
   return (
-    <div className="mb-3">
-      <label htmlFor={id} className="mb-1 block text-xs font-medium text-ink">
+    <div className="field-group">
+      <label className="field-label" htmlFor={id}>
         {label}
       </label>
 
-      <div
-        className={`flex items-center rounded border bg-white px-3 focus-within:border-primary ${
-          error ? 'border-red-500' : 'border-gray-300'
-        }`}
-      >
+      <div className={`input-wrap ${error ? 'input-error' : ''}`}>
         <input
           id={id}
-          type={isPassword && show ? 'text' : type}
-          className="h-9 w-full bg-transparent text-xs outline-none placeholder:text-gray-400"
-          {...props}
+          name={name}
+          type={inputType}
+          value={value}
+          onChange={onChange}
+          placeholder={placeholder}
+          autoComplete={autoComplete}
+          required={required}
+          aria-invalid={Boolean(error)}
+          aria-describedby={error ? `${id}-error` : undefined}
         />
 
         {isPassword ? (
           <button
             type="button"
-            onClick={() => setShow((s) => !s)}
-            aria-label={show ? 'Hide password' : 'Show password'}
-            className="text-muted hover:text-primary"
+            className="input-icon-button"
+            onClick={() => setShowPassword((current) => !current)}
+            aria-label={showPassword ? 'Hide password' : 'Show password'}
           >
-            {show ? <Eye size={16} /> : <EyeOff size={16} />}
+            {showPassword ? <EyeOff size={19} /> : <Eye size={19} />}
           </button>
-        ) : (
-          Icon && <Icon size={16} className="text-muted" />
-        )}
+        ) : Icon ? (
+          <span className="input-icon">
+            <Icon size={18} />
+          </span>
+        ) : null}
       </div>
 
-      {error && <p className="mt-1 text-[11px] text-red-600">{error}</p>}
+      {error && (
+        <p className="field-error" id={`${id}-error`}>
+          {error}
+        </p>
+      )}
     </div>
   )
 }
