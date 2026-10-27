@@ -1,7 +1,9 @@
+import { useState } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import Sidebar from './Sidebar'
 import Topbar from './Topbar'
 import DashboardTabs from './DashboardTabs'
+import NotificationPanel from './NotificationPanel'
 
 const sections = {
   '/dashboard': 'Hospital',
@@ -12,10 +14,7 @@ const sections = {
 export default function DashboardLayout() {
   const { pathname } = useLocation()
   const section = sections[pathname.replace(/\/$/, '')] ?? 'Hospital'
-
-  const handleBellClick = () => {
-    // Notification panel will be added later.
-  }
+  const [notificationsOpen, setNotificationsOpen] = useState(false)
 
   return (
     <div className="min-h-screen bg-[#F5F6FA]">
@@ -26,7 +25,7 @@ export default function DashboardLayout() {
           <Topbar
             section={section}
             unreadCount={section === 'Bags' ? 0 : 3}
-            onBellClick={handleBellClick}
+            onBellClick={() => setNotificationsOpen(true)}
           />
 
           <DashboardTabs />
@@ -34,6 +33,11 @@ export default function DashboardLayout() {
           <Outlet />
         </div>
       </main>
+
+      <NotificationPanel
+        open={notificationsOpen}
+        onClose={() => setNotificationsOpen(false)}
+      />
     </div>
   )
 }

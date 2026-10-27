@@ -1,9 +1,19 @@
-
 import { NavLink } from 'react-router-dom'
 import { LogIn, UserPlus } from 'lucide-react'
 import logo from '../../assets/logo.png'
 import loginImage from '../../assets/Login.png'
 import signupImage from '../../assets/Signup.png'
+import forgotImage from '../../assets/ForgotPassword.png'
+import verifyImage from '../../assets/VerifyEmail.png'
+import resetImage from '../../assets/ResetPassword.png'
+
+const illustrations = {
+  login: { src: loginImage, alt: 'Login illustration' },
+  signup: { src: signupImage, alt: 'Sign up illustration' },
+  forgot: { src: forgotImage, alt: 'Forgot password illustration' },
+  verify: { src: verifyImage, alt: 'Email verification illustration' },
+  reset: { src: resetImage, alt: 'Reset password illustration' },
+}
 
 const tabs = [
   { to: '/login', label: 'Login', icon: LogIn },
@@ -16,7 +26,9 @@ export default function AuthLayout({
   illustration = 'login',
   children,
 }) {
-  const image = illustration === 'signup' ? signupImage : loginImage
+  const current = illustrations[illustration] ?? illustrations.login
+  // Login / Sign Up tabs only appear on the two entry screens, as in Figma
+  const showTabs = illustration === 'login' || illustration === 'signup'
 
   return (
     <div className="auth-page">
@@ -24,20 +36,22 @@ export default function AuthLayout({
         <aside className="auth-sidebar">
           <img className="brand-logo" src={logo} alt="Medicare logo" />
 
-          <nav className="auth-nav">
-            {tabs.map(({ to, label, icon: Icon }) => (
-              <NavLink
-                key={to}
-                to={to}
-                className={({ isActive }) =>
-                  `auth-nav-link ${isActive ? 'active' : ''}`
-                }
-              >
-                <Icon size={28} strokeWidth={1.8} />
-                <span>{label}</span>
-              </NavLink>
-            ))}
-          </nav>
+          {showTabs && (
+            <nav className="auth-nav">
+              {tabs.map(({ to, label, icon: Icon }) => (
+                <NavLink
+                  key={to}
+                  to={to}
+                  className={({ isActive }) =>
+                    `auth-nav-link ${isActive ? 'active' : ''}`
+                  }
+                >
+                  <Icon size={28} strokeWidth={1.8} />
+                  <span>{label}</span>
+                </NavLink>
+              ))}
+            </nav>
+          )}
         </aside>
 
         <section className="auth-art-panel">
@@ -49,8 +63,8 @@ export default function AuthLayout({
           <div className="medical-art">
             <img
               key={illustration}
-              src={image}
-              alt={illustration === 'signup' ? 'Signup illustration' : 'Login illustration'}
+              src={current.src}
+              alt={current.alt}
               className="auth-illustration"
             />
           </div>
@@ -62,9 +76,7 @@ export default function AuthLayout({
             <span>Medicare Admin</span>
           </div>
 
-          <div className="auth-form-container">
-            {children}
-          </div>
+          <div className="auth-form-container">{children}</div>
 
           <footer className="company-footer">
             Developed by <strong>YM Automation Private Limited</strong>
